@@ -1,22 +1,20 @@
 
 <template>
   <div>
-    <Nav />
+    <!-- <Nav /> -->
     <router-view />
-    <Footer />
-    </div>
+    <!-- <Footer /> -->
+  </div>
 </template>
 
 <script>
-import Nav from "./components/Nav"
-import Footer from "./components/Footer"
+// import Nav from "./components/Nav"
+// import Footer from "./components/Footer"
 export default {
   name: 'App',
-  components: {
-    Nav,
-    Footer
-  }
+  // components: {
+  //   Nav,
+  //   Footer
+  // }
 }
 </script>
-<style src="./assets/tailwind.css">
-</style>
