@@ -10,7 +10,7 @@
       <AuthNav>
         <router-view />
       </AuthNav>
-      <Footer />
+      <!-- <Footer /> -->
     </div>
   </div>
 </template>

@@ -37,7 +37,14 @@ const routes = [
   {
       path:"/import",
       name: "import",
+      meta: { requiresAuth: true},
       component: () => import('../components/Import.vue')
+  },
+  {
+      path:"/graphs",
+      name:"graphs",
+      meta: { requiresAuth: true },
+      component: () => import( "../components/Graphs.vue")
   }
 ];
 
