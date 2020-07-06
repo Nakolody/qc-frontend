@@ -8,7 +8,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
                 <form id="importDataFile" class="w-full max-w-sm">
                     <div class="flex items-center border-b border-b-2 border-teal-500 py-2">
-                        <input @change="parseData" id="importFile" class="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" type="file" placeholder="Jane Doe" aria-label="Full name">
+                        <input @change="parseData" id="importFile" class="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" type="file" placeholder="Jane Doe" aria-label="Full name" />
                     </div>
                 </form>
             </div>

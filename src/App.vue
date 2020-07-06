@@ -7,9 +7,9 @@
       <Footer />
     </div>
     <div v-else>
-      <Dashboard >
-      <router-view />
-      </Dashboard>
+      <AuthNav>
+        <router-view />
+      </AuthNav>
       <Footer />
     </div>
   </div>
@@ -19,7 +19,8 @@
 
 import Nav from "./components/Nav"
 import Footer from "./components/Footer"
-import Dashboard from "./components/Dashboard"
+import AuthNav from "./components/AuthNav"
+// import Dashboard from "./components/Dashboard"
 
 export default {
   name: 'App',
@@ -31,7 +32,8 @@ export default {
   components: {
     Nav,
     Footer,
-    Dashboard
+    AuthNav
+    // Dashboard
   }
 }
 </script>
