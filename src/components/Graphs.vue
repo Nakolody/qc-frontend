@@ -50,7 +50,7 @@ export default {
             },
             xaxis: {
               categories: [],
-              type: "dateTime"
+              type: "datetime"
             }
           }
         }
@@ -58,8 +58,9 @@ export default {
     created(){
         this.$http.get('/api/measurements', {
             params: {
-                start_date: '10-01-2019',
-                end_date: '11-01-2020'
+                start_date: '10-01-2019', //TODO make this dynamic
+                end_date: '11-01-2020',   //TODO make this dynamic
+                level: 3                  //TODO make this dynamic
             }
         })
         .then(response => { 
