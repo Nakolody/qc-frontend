@@ -1,5 +1,22 @@
 <template>
     <div>
+      <div>
+        <date-range-picker
+            ref="picker"
+            :opens="opens"
+            v-model="dateRange"
+            class="w-full p-4"
+            :locale-data="{ firstDay: 1, format: 'DD-MM-YYYY' }"
+            :autoApply="autoApply"
+            @update="updateValues"
+            
+    >
+        <template v-slot:input="picker" style="min-width: 350px;">
+            {{ picker.startDate | date }} - {{ picker.endDate | date }}
+        </template>
+    </date-range-picker>
+      </div>
+      <div>
         <apexchart
             type="line"
             height="500"
@@ -9,15 +26,27 @@
             class="p-10 m-4 bg-white shadow-md"
         >
         </apexchart>
+      </div>
     </div>
 </template>
 <script>
-
+import DateRangePicker from 'vue2-daterange-picker'
+//you need to import the CSS manually (in case you want to override it)
+import 'vue2-daterange-picker/dist/vue2-daterange-picker.css'
+import { std, mean } from 'mathjs';
 
 
 export default {
+    components: { DateRangePicker },
     data() {
         return {
+          opens: "center",
+          dateRange: {
+            startDate: null,
+            endDate: null
+            },
+          autoApply: true,
+
             series: [   
                 {
                     name: "Desktops",
@@ -42,24 +71,106 @@ export default {
               text: 'Product Trends by Month',
               align: 'left'
             },
-            grid: {
-              row: {
-                colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
-                opacity: 0.5
-              },
-            },
             xaxis: {
               categories: [],
               type: "datetime"
-            }
+            },
+            yaxis: {
+              min: null,
+              max: null,
+              tickAmount: 4,
+              axisTicks: {
+                show: false
+              },
+              forceNiceScale: false,
+              decimalsInFloat: true
+            },
+            annotations: {
+              yaxis: [
+                {
+                  y:null,
+                  y2:null,
+                  fillColor: '#fed7d7',
+                  borderColor: 'red', 
+                  label: {
+                    borderColor: '#00E396',
+                    style: {
+                      color: '#fff',
+                      background: '#00E396'
+                    },
+                    text: '-2 STD'
+                  }
+                },
+                {
+                  y: null,
+                  y2: null,
+                  fillColor: '#f0fff4',
+                  borderColor: 'green'
+                },
+                {
+                  y: null,
+                  y2: null,
+                  fillColor: '#c6f6d5',
+                  borderColor: 'green',
+                  label: {
+                    borderColor: '#00E396',
+                    style: {
+                      color: '#fff',
+                      background: '#00E396'
+                    },
+                    text: 'Mean'
+                  }
+                },
+                {
+                  y:null,
+                  y2:null,
+                  fillColor: '#c6f6d5',
+                  borderColor: 'green'
+                },
+                {
+                  y:null,
+                  y2:null,
+                  fillColor: '#f0fff4',
+                  borderColor: 'green',
+                    label: {
+                    borderColor: '#00E396',
+                    style: {
+                      color: '#fff',
+                      background: '#00E396'
+                    },
+                    text: '2 STD'
+                  }
+                },
+                {
+                  y:null,
+                  y2:null,
+                  fillColor: '#fed7d7',
+                  borderColor: 'red'
+                }
+              ]
+                
+            },
           }
         }
     },
+    filters: {
+      date: function (value){
+        if (!value) return '';
+        return value.toISOString().split('T')[0];
+      }
+    },
     created(){
+        //let dateBeginning = new Date();
+        this.dateRange.startDate = '09/01/2019' //dateBeginning.setDate(dateBeginning.getDate()-30);
+        this.dateRange.endDate = '10/31/2019'//new Date();
+        this.updateValues();
+    },
+    methods: {
+      updateValues(){
         this.$http.get('/api/measurements', {
             params: {
-                start_date: '10-01-2019', //TODO make this dynamic
-                end_date: '11-01-2020',   //TODO make this dynamic
+                start_date: '09/01/2019', //this.dateRange.startDate, //TODO make this dynamic
+                end_date: '10/31/2019', //this.dateRange.endDate,   //TODO make this dynamic
                 level: 3                  //TODO make this dynamic
             }
         })
@@ -70,9 +181,29 @@ export default {
                     this.chartOptions.xaxis.categories.push(Date.parse(measurement.measurement_time));
                 }
             });
-            console.log(this.chartOptions.xaxis.categories);
-            this.$refs.chart.updateSeries(this.series, true)
+            //console.log(this.series[0].data);
+            let standardDeviation = std(this.series[0].data);
+            let average = mean(this.series[0].data);
+
+            this.chartOptions.annotations.yaxis[0].y = average - (standardDeviation * 4);
+            this.chartOptions.annotations.yaxis[0].y2 = average - (standardDeviation * 2);
+            this.chartOptions.annotations.yaxis[1].y = average - (standardDeviation * 2);
+            this.chartOptions.annotations.yaxis[1].y2 = average - (standardDeviation);
+            this.chartOptions.annotations.yaxis[2].y = average - (standardDeviation);
+            this.chartOptions.annotations.yaxis[2].y2 = average;
+            this.chartOptions.annotations.yaxis[3].y = average;
+            this.chartOptions.annotations.yaxis[3].y2 = average + (standardDeviation);
+            this.chartOptions.annotations.yaxis[4].y = average + (standardDeviation);
+            this.chartOptions.annotations.yaxis[4].y2 = average + (standardDeviation * 2);
+            this.chartOptions.annotations.yaxis[5].y = average + (standardDeviation * 2);
+            this.chartOptions.annotations.yaxis[5].y2 = average + (standardDeviation * 4);
+            this.chartOptions.yaxis.min = average - (standardDeviation * 4);
+            this.chartOptions.yaxis.max = average + (standardDeviation * 4);
+
+            this.$refs.chart.updateSeries(this.series, true);
+            this.$refs.chart.updateOptions(this.chartOptions);
         })
+      }
     }
 }
 </script>
